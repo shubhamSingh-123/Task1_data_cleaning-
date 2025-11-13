@@ -1,0 +1,50 @@
+# ✅ Auto-Detect Data Cleaning Script
+# Works for .zip files containing CSV or Excel (.xlsx)
+
+from google.colab import files
+import zipfile, os, pandas as pd
+
+print("📤 Upload your ZIP file (archive.zip etc.)")
+uploaded = files.upload()
+zip_name = list(uploaded.keys())[0]
+
+# Step 1: Unzip file
+extract_dir = "unzipped_data"
+os.makedirs(extract_dir, exist_ok=True)
+with zipfile.ZipFile(zip_name, 'r') as z:
+    z.extractall(extract_dir)
+print("✅ ZIP extracted!\n")
+
+# Step 2: Detect CSV or Excel files
+csv_files, xlsx_files = [], []
+for root, _, files_in_dir in os.walk(extract_dir):
+    for f in files_in_dir:
+        if f.endswith(".csv"):
+            csv_files.append(os.path.join(root, f))
+        elif f.endswith(".xlsx"):
+            xlsx_files.append(os.path.join(root, f))
+
+if not csv_files and not xlsx_files:
+    raise FileNotFoundError("❌ No CSV or XLSX file found inside ZIP!")
+
+# Step 3: Read the first available file
+if csv_files:
+    file_path = csv_files[0]
+    print(f"📄 Reading CSV file: {file_path}")
+    df = pd.read_csv(file_path)
+else:
+    file_path = xlsx_files[0]
+    print(f"📄 Reading Excel file: {file_path}")
+    df = pd.read_excel(file_path)
+
+# Step 4: Clean data
+df.drop_duplicates(inplace=True)
+df.fillna("Unknown", inplace=True)
+df.columns = df.columns.str.lower().str.replace(" ", "_")
+
+# Step 5: Save cleaned dataset
+cleaned_name = "cleaned_dataset.csv"
+df.to_csv(cleaned_name, index=False)
+
+print("\n🎉 Data cleaned successfully!")
+files.download(cleaned_name)
