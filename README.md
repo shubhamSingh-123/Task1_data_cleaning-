@@ -1,6 +1,6 @@
 
 # Hospital Management
-![developer](https://img.shields.io/badge/Developed%20By%20%3A-Shubham, Mohit,Harsit%20G-red)
+![developer](https://img.shields.io/badge/Developed%20By%20%3A-Shubham- Mohit-Harsit%20G-red)
 ---
 ## screenshots
 ### Homepage
